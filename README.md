@@ -10,7 +10,9 @@ bundled dependencies.
 Tested on:
 
 * Debian 11
+* Debian 12
 * Ubuntu 22.04
+* Ubuntu 24.04
 
 Probably will not work on:
 
@@ -44,6 +46,10 @@ If you have an error starting the AppImage complaining about FUSE (it happened
 to me while testing on Ubuntu 22.04), just install the `libfuse2` package:
 
     sudo apt-get install libfuse2 -yq
+
+Note: this should not happen as of 5.12.0 and later versions, as we switched
+to building the AppImage versions with `linuxdeploy` with now utilizes a better
+system with an static libfuse implementation.
 
 ## Portable home folder
 

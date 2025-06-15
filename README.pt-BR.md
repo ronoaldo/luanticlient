@@ -9,8 +9,10 @@ download que contém todas as dependências necessárias em um único arquivo.
 
 Testado em:
 
-* Debian 11 
+* Debian 11
+* Debian 12
 * Ubuntu 22.04
+* Ubuntu 24.04
 
 Provavelmente não irá funcionar em:
 
@@ -47,6 +49,10 @@ Se você receber uma mensagem de erro informando que o FUSE está faltando
 `libfuse2`:
 
     sudo apt-get install libfuse2 -yq
+
+Nota: isso não deveria ocorrer desde a versão 5.12.0 já que alteramos para
+construir as imagens utilizando `linuxdeploy` que utiliza uma implementação
+melhor com uma vesão estática do libfuse.
 
 ## Diretório pessoal portátil
 

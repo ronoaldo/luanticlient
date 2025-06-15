@@ -74,27 +74,19 @@ case ${BRANCH} in
     ;;
     # 5.10.0+ was renamed to Luanti and from here on
     # we no longer bundle Minetest Game
-    5.10.0|5.11.0) ;;
+    5.10.0|5.11.0|5.12.0) ;;
     master|main) ;;
 esac
 
-install_appimage_builder() {
-    apt-get update
-    apt-get install curl -yq
-
+install_linuxdeploy() {
     pushd /opt
-    APPIMAGE_BUILDER_DOWNLOAD="https://github.com/AppImageCrafters/appimage-builder/releases/download"
-	APPIMAGE_BUILDER_DOWNLOAD="${APPIMAGE_BUILDER_DOWNLOAD}/v1.1.0/appimage-builder-1.1.0-x86_64.AppImage"
-    curl -sSL --fail "$APPIMAGE_BUILDER_DOWNLOAD" > appimage-builder
-    chmod +x appimage-builder
-    # Required to run inside container
-    # Ref: https://github.com/AppImageCrafters/appimage-builder/pull/179/files
-    # Ref: https://github.com/AppImage/AppImageKit/issues/828
-    sed '0,/AI\x02/{s|AI\x02|\x00\x00\x00|}' -i appimage-builder
-    ./appimage-builder --appimage-extract
-    mv squashfs-root appimage-builder.AppDir
-    ln -s /opt/appimage-builder.AppDir/AppRun /usr/bin/appimage-builder
-    appimage-builder --version
+	PKG_URL="https://github.com/linuxdeploy/linuxdeploy/releases/download/1-alpha-20250213-2/linuxdeploy-x86_64.AppImage"
+    curl -sSL --fail "$PKG_URL" > linuxdeploy 
+    chmod +x linuxdeploy 
+    ./linuxdeploy --appimage-extract
+    mv squashfs-root linuxdeploy.AppDir
+    ln -s /opt/linuxdeploy.AppDir/AppRun /usr/bin/linuxdeploy
+    linuxdeploy --version
     popd
 }
 
@@ -121,7 +113,7 @@ download_sources() {
 install_build_dependencies() {
     apt-get update
     # appimage requirements
-    apt-get install gpg gtk-update-icon-cache git -yq
+    apt-get install file gpg gtk-update-icon-cache curl git -yq
     # Luanti requirements
     apt-get install \
         g++ make libc6-dev cmake libpng-dev libjpeg-dev libgl1-mesa-dev \
@@ -153,7 +145,7 @@ bundle_appimage() {
     	mkdir -p AppDir/usr/share/${BINARY_NAME}/games/minetest_game/
         cp -r ../minetest/games/minetest_game/* AppDir/usr/share/${BINARY_NAME}/games/minetest_game/
     fi
-    appimage-builder --recipe "$WORKSPACE/AppImageBuilder.${BINARY_NAME}.yaml"
+	linuxdeploy --appdir AppDir --output appimage
     mkdir -p "$WORKSPACE/build"
     mv ./*.AppImage* "$WORKSPACE/build"
     chmod a+x "$WORKSPACE"/build/*.AppImage
@@ -172,8 +164,8 @@ echo "- Branch: ${BRANCH}; Luanti Version: ${MINETEST_VERSION}"
 echo "- Minetest Game Version: ${MINETEST_GAME_VERSION}; Irrlicht: ${MINETEST_IRRLICHT_VERSION}"
 echo
 
-install_appimage_builder
 install_build_dependencies
+install_linuxdeploy
 download_sources
 build
 bundle_appimage
