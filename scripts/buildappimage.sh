@@ -74,7 +74,7 @@ case ${BRANCH} in
     ;;
     # 5.10.0+ was renamed to Luanti and from here on
     # we no longer bundle Minetest Game
-    5.10.0|5.11.0|5.12.0) ;;
+    5.10.0|5.11.0|5.12.0|5.13.0) ;;
     master|main) ;;
 esac
 
